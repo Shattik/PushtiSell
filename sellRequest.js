@@ -10,15 +10,11 @@ router.route("/sme").post(async (req, res) => {
                                             where S."id" = U."id"
                                             and S."rank" = R."className"
                                             and "agentId" = $1`, [agent_id]);
-        let products = await supabase.any(`select * from "Product"
-                                            where "id" in ( 
-                                                select "productId" from "Inventory"
-                                                where "unionId" = (
-                                                    select "unionId" from "User"
-                                                    where "id" = $1
-                                                ) 
-                                                and "amount" > 0
-                                            )`, [agent_id]);
+        let products = await supabase.any(`select "id", "name", "unit", "unitPrice", "taxPercentage", "imageLink", "amount" from "Product", "Inventory"
+                                            where "id" = "productId" 
+                                            and "unionId" = (select "unionId" from "User"
+                                                            where "id" = $1) 
+                                            and "amount" > 0;`, [agent_id]);
         let response = {
             smes: smes,
             products: products,
@@ -45,15 +41,11 @@ router.route("/vendor").post(async (req, res) => {
                                         where V."id" = U."id"
                                         and V."rank" = R."className"
                                         and "agentId" = $1`, [agent_id]);
-        let products = await supabase.any(`select * from "Product"
-                                            where "id" in ( 
-                                                select "productId" from "Inventory"
-                                                where "unionId" = (
-                                                    select "unionId" from "User"
-                                                    where "id" = $1
-                                                ) 
-                                            and "amount" > 0
-                                        )`, [agent_id]);
+        let products = await supabase.any(`select "id", "name", "unit", "unitPrice", "taxPercentage", "imageLink", "amount" from "Product", "Inventory"
+                                            where "id" = "productId" 
+                                            and "unionId" = (select "unionId" from "User"
+                                                            where "id" = $1) 
+                                            and "amount" > 0;`, [agent_id]);
         let response = {
             vendors: vendors,
             products: products,
